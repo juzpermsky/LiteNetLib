@@ -23,18 +23,18 @@ namespace SpeedTest
 
             svListener.ConnectionRequestEvent += request =>
             {
-                Console.WriteLine("Server: Connection request received");
+//                Console.WriteLine("Server: Connection request received");
                 request.AcceptIfKey(key);
             };
 
-            svListener.PeerConnectedEvent += peer => { Console.WriteLine($"Server: Peer {peer.EndPoint} connected"); };
+//            svListener.PeerConnectedEvent += peer => { Console.WriteLine($"Server: Peer {peer.EndPoint} connected"); };
 
             svListener.NetworkReceiveEvent += (peer, reader, method) =>
             {
                 if (rcv == 0)
                 {
                     firstReceived = DateTime.Now;
-                    Console.WriteLine($"First received after {firstReceived - firstSent}");
+//                    Console.WriteLine($"First received after {firstReceived - firstSent}");
                 }
 
                 rcv++;
@@ -42,14 +42,14 @@ namespace SpeedTest
                 {
                     var lastReceived = DateTime.Now;
                     Console.WriteLine($"{sampleCount} samples received in {lastReceived - firstReceived}");
-                    Console.WriteLine($"Last received after {lastReceived - lastSent}");
+//                    Console.WriteLine($"Last received after {lastReceived - lastSent}");
                     peer.NetManager.DisconnectPeer(peer);
                 }
             };
 
             svListener.PeerDisconnectedEvent += (peer, info) =>
             {
-                Console.WriteLine("Server: DisconnectEvent received");
+//                Console.WriteLine("Server: DisconnectEvent received");
                 peer.NetManager.Stop();
             };
 
@@ -68,7 +68,7 @@ namespace SpeedTest
             var clListener = new EventBasedNetListener();
             clListener.PeerConnectedEvent += peer =>
             {
-                Console.WriteLine($"Client: Peer {peer.EndPoint} connected");
+//                Console.WriteLine($"Client: Peer {peer.EndPoint} connected");
                 for (var i = 0; i < sampleCount; i++)
                 {
                     if (i == 0)
@@ -86,7 +86,7 @@ namespace SpeedTest
             };
             clListener.PeerDisconnectedEvent += (peer, info) =>
             {
-                Console.WriteLine("Client: DisconnectEvent received");
+//                Console.WriteLine("Client: DisconnectEvent received");
                 peer.NetManager.Stop();
             };
 
@@ -103,12 +103,15 @@ namespace SpeedTest
 
         static void Main(string[] args)
         {
-            var st = new Thread(ServerThread);
-            var ct = new Thread(ClientThread);
-            st.Start();
-            ct.Start();
-            st.Join();
-            ct.Join();
+            for (var i = 1; i < 10; i++)
+            {
+                var st = new Thread(ServerThread);
+                var ct = new Thread(ClientThread);
+                st.Start();
+                ct.Start();
+                st.Join();
+                ct.Join();
+            }
         }
     }
 }
